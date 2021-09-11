@@ -5,8 +5,10 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "Board.hpp"
+#include "Solver.hpp"
 
 // TODO: Reference additional headers your program requires here.

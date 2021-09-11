@@ -14,7 +14,7 @@
 class Board
 {
 public:
-
+   Board() = default;
    Board(const Board& aRhs) = default;
    Board& operator=(const Board& aRhs) = default;
 
@@ -27,13 +27,14 @@ public:
    std::vector<Direction> LegalMoves() const;
    void MakeMove(const Direction aDirection);
 
+   bool IsSolved() const;
+
    size_t Hash() const;
    bool operator==(const Board& aRhs) const;
 
    void PrintToStream(std::ostream& aOut) const;
 
 private:
-   Board() = default;
 
    Location mPlayer;
    Location mSize;
@@ -52,7 +53,7 @@ public:
       void FromStream(std::istream& aIn);
 
    private:
-      std::unique_ptr<Board> mBoardPtr;
+      std::unique_ptr<Board> mBoardPtr{ std::make_unique<Board>() };
    };
 };
 

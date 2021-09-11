@@ -6,10 +6,10 @@
 
 enum class Direction
 {
-   Up =    'U',
-   Right = 'R',
-   Down  = 'D',
-   Left  = 'L'
+   Up    = 0,
+   Right = 1,
+   Down  = 2,
+   Left  = 3
 };
 
 class Location

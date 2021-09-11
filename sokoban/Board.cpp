@@ -96,6 +96,18 @@ void Board::MakeMove(const Direction aDirection)
    }
 }
 
+bool Board::IsSolved() const
+{
+   for (const auto& target : mTargets)
+   {
+      if (target.second == false)
+      {
+         return false;
+      }
+   }
+   return true;
+}
+
 size_t Board::Hash() const
 {
    size_t hash = 0;
