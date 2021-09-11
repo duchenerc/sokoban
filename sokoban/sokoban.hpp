@@ -7,4 +7,6 @@
 #include <iostream>
 #include <string>
 
+#include "Board.hpp"
+
 // TODO: Reference additional headers your program requires here.

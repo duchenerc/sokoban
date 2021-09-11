@@ -15,9 +15,12 @@ int main(int argc, char* argv[])
       filename = argv[1];
    }
 
+   Board::Builder builder;
    std::ifstream fin{ filename };
-
+   builder.FromStream(fin);
    fin.close();
+
+   Board initial = builder.Build();
 
    return 0;
 }
