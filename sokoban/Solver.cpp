@@ -46,12 +46,12 @@ void Solver::PrintToStream(std::ostream& aOut) const
    aOut << std::endl;
 
    // print solved board
-   mSolved.PrintToStream(aOut);
+   mSolvedBoardPtr->PrintToStream(aOut);
 }
 
 void BreadthFirstTreeSearchSolver::Solve()
 {
-   mInitialNodePtr = std::make_unique<SearchNode>(nullptr, Direction::Up, mInitial);
+   mInitialNodePtr = std::make_unique<SearchNode>(nullptr, Direction::Up, *mInitialBoardPtr);
    mFrontier.push(mInitialNodePtr.get());
    SearchNode* currentPtr = nullptr;
 
@@ -60,24 +60,23 @@ void BreadthFirstTreeSearchSolver::Solve()
       currentPtr = mFrontier.front();
       mFrontier.pop();
 
-      if (currentPtr->mBoard.IsSolved())
+      if (currentPtr->mBoardPtr->IsSolved())
       {
          mIsSolved = true;
          break;
       }
-      else if (mExplored.find(currentPtr->mBoard) != mExplored.end())
+      else if (mExplored.find(*currentPtr->mBoardPtr) != mExplored.end())
       {
          // already explored
          continue;
       }
-      mExplored.insert(currentPtr->mBoard);
+      mExplored.insert(*currentPtr->mBoardPtr);
 
-      std::vector<Direction> legalMoves = currentPtr->mBoard.LegalMoves();
+      std::vector<Direction> legalMoves = currentPtr->mBoardPtr->LegalMoves();
       for (const Direction move : legalMoves)
       {
-         Board childBoard = currentPtr->mBoard;
-         childBoard.MakeMove(move);
-         auto childPtr = std::make_unique<SearchNode>(currentPtr, move, childBoard);
+         auto childPtr = std::make_unique<SearchNode>(currentPtr, move, *currentPtr->mBoardPtr);
+         childPtr->mBoardPtr->MakeMove(move);
          mFrontier.push(childPtr.get());
          currentPtr->mChildren[static_cast<size_t>(move)] = std::move(childPtr);
       }
@@ -85,7 +84,7 @@ void BreadthFirstTreeSearchSolver::Solve()
 
    if (mIsSolved && currentPtr)
    {
-      mSolved = currentPtr->mBoard;
+      mSolvedBoardPtr = std::make_unique<Board>(*currentPtr->mBoardPtr);
       while (currentPtr->mParentPtr != nullptr)
       {
          mMovesToSolve.push_front(currentPtr->mParentMove);
@@ -115,7 +114,7 @@ void IterativeDeepeningDepthFirstTreeSearchSolver::Solve()
 
    if (mIsSolved && solvedPtr)
    {
-      mSolved = solvedPtr->mBoard;
+      mSolvedBoardPtr = std::make_unique<Board>(*solvedPtr->mBoardPtr);
       while (solvedPtr->mParentPtr != nullptr)
       {
          mMovesToSolve.push_front(solvedPtr->mParentMove);
@@ -126,7 +125,7 @@ void IterativeDeepeningDepthFirstTreeSearchSolver::Solve()
 
 IterativeDeepeningDepthFirstTreeSearchSolver::SearchNode* IterativeDeepeningDepthFirstTreeSearchSolver::SolveToDepth(const int aMaxDepth)
 {
-   mInitialNodePtr = std::make_unique<SearchNode>(nullptr, Direction::Up, mInitial);
+   mInitialNodePtr = std::make_unique<SearchNode>(nullptr, Direction::Up, *mInitialBoardPtr);
    mFrontier.push(mInitialNodePtr.get());
    SearchNode* currentPtr = nullptr;
 
@@ -134,12 +133,12 @@ IterativeDeepeningDepthFirstTreeSearchSolver::SearchNode* IterativeDeepeningDept
    {
       currentPtr = mFrontier.top();
       mFrontier.pop();
-      if (currentPtr->mBoard.IsSolved())
+      if (currentPtr->mBoardPtr->IsSolved())
       {
          mIsSolved = true;
          return currentPtr;
       }
-      else if (mExplored.find(currentPtr->mBoard) != mExplored.end())
+      else if (mExplored.find(*currentPtr->mBoardPtr) != mExplored.end())
       {
          // already explored
          continue;
@@ -149,13 +148,12 @@ IterativeDeepeningDepthFirstTreeSearchSolver::SearchNode* IterativeDeepeningDept
          continue;
       }
 
-      mExplored.insert(currentPtr->mBoard);
-      std::vector<Direction> legalMoves = currentPtr->mBoard.LegalMoves();
+      mExplored.insert(*currentPtr->mBoardPtr);
+      std::vector<Direction> legalMoves = currentPtr->mBoardPtr->LegalMoves();
       for (const Direction move : legalMoves)
       {
-         Board childBoard = currentPtr->mBoard;
-         childBoard.MakeMove(move);
-         auto childPtr = std::make_unique<SearchNode>(currentPtr, move, childBoard);
+         auto childPtr = std::make_unique<SearchNode>(currentPtr, move, *currentPtr->mBoardPtr);
+         childPtr->mBoardPtr->MakeMove(move);
          mFrontier.push(childPtr.get());
          currentPtr->mChildren[static_cast<size_t>(move)] = std::move(childPtr);
       }

@@ -21,7 +21,7 @@ public:
 
    Solver() = delete;
    Solver(const Board& aInitial)
-      : mInitial{ aInitial }
+      : mInitialBoardPtr{ std::make_unique<Board>(aInitial) }
    {}
    virtual ~Solver() = default;
 
@@ -38,7 +38,7 @@ protected:
       SearchNode(SearchNode* aParentPtr, const Direction aParentMove, const Board& aBoard)
          : mParentPtr{ aParentPtr }
          , mParentMove{ aParentMove }
-         , mBoard{ aBoard }
+         , mBoardPtr{ std::make_unique<Board>(aBoard) }
          , mDepth{ aParentPtr == nullptr ? 0 : aParentPtr->mDepth + 1 }
       {}
 
@@ -46,13 +46,13 @@ protected:
 
       SearchNode* mParentPtr;
       Direction mParentMove;
-      Board mBoard;
+      std::unique_ptr<Board> mBoardPtr;
       int mDepth;
       std::array<std::unique_ptr<SearchNode>, 4> mChildren;
    };
 
-   Board mInitial;
-   Board mSolved;
+   std::unique_ptr<Board> mInitialBoardPtr;
+   std::unique_ptr<Board> mSolvedBoardPtr;
    std::list<Direction> mMovesToSolve;
    bool mIsSolved = false;
 
