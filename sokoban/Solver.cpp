@@ -92,5 +92,74 @@ void BreadthFirstTreeSearchSolver::Solve()
          currentPtr = currentPtr->mParentPtr;
       }
    }
+}
 
+void IterativeDeepeningDepthFirstTreeSearchSolver::Solve()
+{
+   int maxDepth = 0;
+   SearchNode* solvedPtr = nullptr;
+
+   while (true)
+   {
+      solvedPtr = SolveToDepth(maxDepth);
+      if (mIsSolved)
+      {
+         break;
+      }
+      else
+      {
+         maxDepth++;
+         mExplored.clear();
+      }
+   };
+
+   if (mIsSolved && solvedPtr)
+   {
+      mSolved = solvedPtr->mBoard;
+      while (solvedPtr->mParentPtr != nullptr)
+      {
+         mMovesToSolve.push_front(solvedPtr->mParentMove);
+         solvedPtr = solvedPtr->mParentPtr;
+      }
+   }
+}
+
+IterativeDeepeningDepthFirstTreeSearchSolver::SearchNode* IterativeDeepeningDepthFirstTreeSearchSolver::SolveToDepth(const int aMaxDepth)
+{
+   mInitialNodePtr = std::make_unique<SearchNode>(nullptr, Direction::Up, mInitial);
+   mFrontier.push(mInitialNodePtr.get());
+   SearchNode* currentPtr = nullptr;
+
+   while (!mFrontier.empty())
+   {
+      currentPtr = mFrontier.top();
+      mFrontier.pop();
+      if (currentPtr->mBoard.IsSolved())
+      {
+         mIsSolved = true;
+         return currentPtr;
+      }
+      else if (mExplored.find(currentPtr->mBoard) != mExplored.end())
+      {
+         // already explored
+         continue;
+      }
+      else if (currentPtr->mDepth >= aMaxDepth)
+      {
+         continue;
+      }
+
+      mExplored.insert(currentPtr->mBoard);
+      std::vector<Direction> legalMoves = currentPtr->mBoard.LegalMoves();
+      for (const Direction move : legalMoves)
+      {
+         Board childBoard = currentPtr->mBoard;
+         childBoard.MakeMove(move);
+         auto childPtr = std::make_unique<SearchNode>(currentPtr, move, childBoard);
+         mFrontier.push(childPtr.get());
+         currentPtr->mChildren[static_cast<size_t>(move)] = std::move(childPtr);
+      }
+   }
+
+   return nullptr;
 }

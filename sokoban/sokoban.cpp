@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
       solver = std::make_unique<BreadthFirstTreeSearchSolver>(initial);
       break;
    case 'i':
+      solver = std::make_unique<IterativeDeepeningDepthFirstTreeSearchSolver>(initial);
+      break;
    case 'g':
    case 'a':
    default:

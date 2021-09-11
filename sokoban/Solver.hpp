@@ -5,9 +5,10 @@
 #include <array>
 #include <chrono>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <queue>
-#include <list>
+#include <stack>
 #include <unordered_set>
 
 #include "Board.hpp"
@@ -76,6 +77,25 @@ private:
    std::unique_ptr<SearchNode> mInitialNodePtr;
    std::unordered_set<Board> mExplored;
    std::queue<SearchNode*> mFrontier;
+};
+
+class IterativeDeepeningDepthFirstTreeSearchSolver : public Solver
+{
+public:
+   IterativeDeepeningDepthFirstTreeSearchSolver() = delete;
+   IterativeDeepeningDepthFirstTreeSearchSolver(const Board& aInitial)
+      : Solver{ aInitial }
+   {}
+   virtual ~IterativeDeepeningDepthFirstTreeSearchSolver() = default;
+
+protected:
+   void Solve() override;
+   SearchNode* SolveToDepth(const int aMaxDepth);
+
+private:
+   std::unique_ptr<SearchNode> mInitialNodePtr;
+   std::unordered_set<Board> mExplored;
+   std::stack<SearchNode*> mFrontier;
 };
 
 #endif
